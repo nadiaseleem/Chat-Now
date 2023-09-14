@@ -25,10 +25,9 @@ class RegisterViewModel : ViewModel() {
     val errorLiveData = MutableLiveData<ViewError>()
 
     fun createAccountWithEmailAndPassword() {
-        isLoading.postValue(true)
         shouldClearFocus.postValue(true)
         if (!validateForm()) return
-
+        isLoading.postValue(true)
 
         firebaseAuth.createUserWithEmailAndPassword(email.value!!, password.value!!)
             .addOnCompleteListener { task ->
@@ -55,7 +54,7 @@ class RegisterViewModel : ViewModel() {
         if (!hasFocus) {
             val usernameEditText = view as EditText
             val username = usernameEditText.text.toString()
-            if (username.isNullOrBlank()) {
+            if (username.isBlank()) {
                 usernameError.postValue("please enter username")
             } else {
                 usernameError.postValue(null)
@@ -67,9 +66,9 @@ class RegisterViewModel : ViewModel() {
         if (!hasFocus) {
             val emailEditText = view as EditText
             val email = emailEditText.text.toString()
-            if (email.isNullOrBlank()) {
+            if (email.isBlank()) {
                 emailError.postValue("please enter email")
-            } else if (!Patterns.EMAIL_ADDRESS.matcher(email.toString()).matches()) {
+            } else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
                 emailError.postValue("please enter a valid email address")
             } else {
                 emailError.postValue(null)
@@ -81,7 +80,7 @@ class RegisterViewModel : ViewModel() {
         if (!hasFocus) {
             val passwordEditText = view as EditText
             val password = passwordEditText.text.toString()
-            if (password.isNullOrBlank()) {
+            if (password.isBlank()) {
                 passwordError.postValue("please enter password")
             } else if (password.length < 8) {
                 passwordError.postValue("Minimum 8 characters password")
@@ -103,7 +102,7 @@ class RegisterViewModel : ViewModel() {
         if (!hasFocus) {
             val passwordConfirmationEditText = view as EditText
             val passwordConfirmation = passwordConfirmationEditText.text.toString()
-            if (passwordConfirmation.isNullOrBlank()) {
+            if (passwordConfirmation.isBlank()) {
                 passwordConfirmationError.postValue("please reenter password")
             } else if (passwordConfirmation != password.value) {
                 passwordConfirmationError.postValue("password doesn't match")

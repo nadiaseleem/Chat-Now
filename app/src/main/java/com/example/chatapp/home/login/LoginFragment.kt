@@ -7,14 +7,17 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import com.example.chatapp.R
 import com.example.chatapp.databinding.FragmentLoginBinding
 import com.example.chatapp.home.MainActivity
 import com.example.chatapp.home.register.RegisterFragment
 import com.example.chatapp.util.hideKeyboard
+import com.example.chatapp.util.showAlertDialog
 
 class LoginFragment : Fragment() {
     lateinit var binding: FragmentLoginBinding
+    lateinit var loginViewModel: LoginViewModel
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -26,9 +29,24 @@ class LoginFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        loginViewModel = ViewModelProvider(this)[LoginViewModel::class.java]
+        binding.vm = loginViewModel
+        binding.lifecycleOwner = this
         hideKeyboard()
         onCreateAccountClick()
+        observeErrorLiveData()
 
+    }
+
+    private fun observeErrorLiveData() {
+        loginViewModel.errorLiveData.observe(viewLifecycleOwner) { viewError ->
+            showAlertDialog(
+                message = viewError.message ?: "something went wrong",
+                posActionName = "ok",
+                posAction = { dialogInterface, i ->
+                    dialogInterface.dismiss()
+                })
+        }
     }
 
     private fun onCreateAccountClick() {
