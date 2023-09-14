@@ -26,15 +26,23 @@ class LoginFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        hideKeyboard()
+        onCreateAccountClick()
 
-        binding.constraint.setOnClickListener {
-            it.hideKeyboard(activity as AppCompatActivity?)
-        }
+    }
+
+    private fun onCreateAccountClick() {
         binding.tvDontHaveAccount.setOnClickListener {
             parentFragmentManager.beginTransaction()
                 .replace(R.id.fragment_container, RegisterFragment())
                 .addToBackStack(null)
                 .commit()
+        }
+    }
+
+    private fun hideKeyboard() {
+        binding.constraint.setOnClickListener {
+            it.hideKeyboard(activity as AppCompatActivity?)
         }
     }
 

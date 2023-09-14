@@ -10,5 +10,7 @@
     <string name="last_name">Last Name</string>
     <string name="g_first_name">First Name</string>
     <string name="create_account">Create Account</string>
+    <string name="password_confirmation">Password Confirmation</string>
+    <string name="username">Username</string>
 
 </resources>
