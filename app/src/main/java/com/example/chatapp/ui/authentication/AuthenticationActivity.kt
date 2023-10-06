@@ -1,17 +1,17 @@
-package com.example.chatapp.home
+package com.example.chatapp.ui.authentication
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.example.chatapp.R
-import com.example.chatapp.databinding.ActivityMainBinding
-import com.example.chatapp.home.login.LoginFragment
+import com.example.chatapp.databinding.ActivityAuthenticationBinding
+import com.example.chatapp.ui.authentication.login.LoginFragment
 
-class MainActivity : AppCompatActivity() {
-    lateinit var binding: ActivityMainBinding
+class AuthenticationActivity : AppCompatActivity() {
+    lateinit var binding: ActivityAuthenticationBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        binding = ActivityMainBinding.inflate(layoutInflater)
+        binding = ActivityAuthenticationBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         setSupportActionBar(binding.toolbar)

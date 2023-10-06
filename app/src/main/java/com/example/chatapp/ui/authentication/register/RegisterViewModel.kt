@@ -1,11 +1,15 @@
-package com.example.chatapp.home.register
+package com.example.chatapp.ui.authentication.register
 
 import android.util.Patterns
 import android.view.View
 import android.widget.EditText
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.chatapp.util.ViewError
+import com.example.chatapp.SessionProvider
+import com.example.chatapp.common.SingleLiveEvent
+import com.example.chatapp.firestore.dao.UsersDao
+import com.example.chatapp.firestore.model.User
+import com.example.chatapp.util.Message
 import com.google.firebase.auth.FirebaseAuth
 
 class RegisterViewModel : ViewModel() {
@@ -22,26 +26,50 @@ class RegisterViewModel : ViewModel() {
 
     val shouldClearFocus = MutableLiveData<Boolean>()
     val isLoading = MutableLiveData<Boolean>()
-    val errorLiveData = MutableLiveData<ViewError>()
+    val messageLiveData = SingleLiveEvent<Message>()
+    val events = SingleLiveEvent<RegisterViewEvent>()
+    val hideKeyboard = MutableLiveData<Boolean>()
+    private fun insertUserToFirestore(user: User) {
+        UsersDao.createUser(user) { task ->
+            isLoading
+                .postValue(false)
+            if (task.isSuccessful) {
+                messageLiveData.postValue(
+                    Message(message = "User registered successfully", posName = "ok",
+                        posAction = {
+                            SessionProvider.user = user
+                            events.postValue(RegisterViewEvent.NavigateToHome)
+                        })
+                )
+            } else {
+                messageLiveData.postValue(
+                    Message(
+                        task.exception?.localizedMessage
+                    )
+                )
+            }
+
+        }
+    }
 
     fun createAccountWithEmailAndPassword() {
         shouldClearFocus.postValue(true)
+        hideKeyboard.postValue(true)
         if (!validateForm()) return
         isLoading.postValue(true)
 
         firebaseAuth.createUserWithEmailAndPassword(email.value!!, password.value!!)
             .addOnCompleteListener { task ->
-                isLoading.postValue(false)
                 if (task.isSuccessful) {
-                    errorLiveData.postValue(
-                        ViewError(
-                            task.result.user?.uid
-                        )
-                    )
+
+                    val user = User(task.result.user?.uid, username = username.value, email.value)
+                    insertUserToFirestore(user)
 
                 } else {
-                    errorLiveData.postValue(
-                        ViewError(
+                    isLoading
+                        .postValue(false)
+                    messageLiveData.postValue(
+                        Message(
                             task.exception?.localizedMessage
                         )
                     )
@@ -112,6 +140,10 @@ class RegisterViewModel : ViewModel() {
         }
     }
 
+    fun onLoginClicked() {
+        events.postValue(RegisterViewEvent.NavigateToLogin)
+    }
+
 
     private fun validateForm(): Boolean {
         var valid = true
@@ -164,4 +196,9 @@ class RegisterViewModel : ViewModel() {
 
         return valid
     }
+
+    fun onOutsideClick() {
+        hideKeyboard.postValue(true)
+    }
+
 }
