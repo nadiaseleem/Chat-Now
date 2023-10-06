@@ -1,5 +1,6 @@
-package com.example.chatapp.home.register
+package com.example.chatapp.ui.authentication.register
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,10 +12,11 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.chatapp.R
 import com.example.chatapp.databinding.FragmentRegisterBinding
-import com.example.chatapp.home.MainActivity
-import com.example.chatapp.home.login.LoginFragment
+import com.example.chatapp.ui.authentication.AuthenticationActivity
+import com.example.chatapp.ui.authentication.login.LoginFragment
+import com.example.chatapp.ui.home.HomeActivity
 import com.example.chatapp.util.hideKeyboard
-import com.example.chatapp.util.showAlertDialog
+import com.example.chatapp.util.showMessage
 
 
 class RegisterFragment : Fragment() {
@@ -37,36 +39,52 @@ class RegisterFragment : Fragment() {
         binding.vm = registerViewModel
         binding.lifecycleOwner = this
         hideKeyboard()
-        onHaveAccountClick()
-        observeErrorLiveData()
+        subscribeToLiveData()
 
     }
 
-    private fun observeErrorLiveData() {
-        registerViewModel.errorLiveData.observe(viewLifecycleOwner) { viewError ->
-            showAlertDialog(
-                message = viewError.message ?: "something went wrong",
+    private fun subscribeToLiveData() {
+
+        registerViewModel.messageLiveData.observe(viewLifecycleOwner) { message ->
+            showMessage(
+                message = message.message ?: "something went wrong",
                 posActionName = "ok",
-                posAction = { dialogInterface, i ->
-                    dialogInterface.dismiss()
-                })
+                posAction = message.posAction,
+                negActionName = message.negName,
+                negAction = message.negAction,
+                isCancelable = message.isCancelable
+            )
+        }
+
+        registerViewModel.events.observe(viewLifecycleOwner, ::handleEvents)
+        registerViewModel.hideKeyboard.observe(viewLifecycleOwner) { hide ->
+            if (hide)
+                hideKeyboard()
+        }
+
+    }
+
+    private fun handleEvents(registerViewEvent: RegisterViewEvent) {
+        when (registerViewEvent) {
+            RegisterViewEvent.NavigateToHome -> navigateToHome()
+            RegisterViewEvent.NavigateToLogin -> navigateToLogin()
         }
     }
 
-
-    private fun onHaveAccountClick() {
-        binding.loginHaveAccountTv.setOnClickListener {
-            parentFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, LoginFragment())
-                .addToBackStack(null)
-                .commit()
-        }
+    private fun navigateToLogin() {
+        parentFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, LoginFragment())
+            .commit()
     }
+
+    private fun navigateToHome() {
+        startActivity(Intent(activity, HomeActivity::class.java))
+        requireActivity().finish()
+    }
+
 
     private fun hideKeyboard() {
-        binding.constraint.setOnClickListener {
-            it.hideKeyboard(activity as AppCompatActivity?)
-        }
+        view?.hideKeyboard(activity as AppCompatActivity?)
     }
 
     override fun onResume() {
@@ -77,7 +95,7 @@ class RegisterFragment : Fragment() {
     }
 
     private fun enableBackArrowButton() {
-        val activity = requireActivity() as MainActivity
+        val activity = requireActivity() as AuthenticationActivity
         val toolbar = activity.findViewById<Toolbar>(R.id.toolbar)
 
         activity.supportActionBar?.setDisplayHomeAsUpEnabled(true)

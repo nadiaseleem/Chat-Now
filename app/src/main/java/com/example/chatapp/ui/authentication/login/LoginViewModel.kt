@@ -1,11 +1,15 @@
-package com.example.chatapp.home.login
+package com.example.chatapp.ui.authentication.login
 
 import android.util.Patterns
 import android.view.View
 import android.widget.EditText
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.chatapp.util.ViewError
+import com.example.chatapp.SessionProvider
+import com.example.chatapp.common.SingleLiveEvent
+import com.example.chatapp.firestore.dao.UsersDao
+import com.example.chatapp.firestore.model.User
+import com.example.chatapp.util.Message
 import com.google.firebase.auth.FirebaseAuth
 
 class LoginViewModel : ViewModel() {
@@ -18,23 +22,38 @@ class LoginViewModel : ViewModel() {
 
     val shouldClearFocus = MutableLiveData<Boolean>()
     val isLoading = MutableLiveData<Boolean>()
-    val errorLiveData = MutableLiveData<ViewError>()
-
+    val messageLiveData = SingleLiveEvent<Message>()
+    val events = SingleLiveEvent<LoginViewEvents>()
+    val hideKeyboard = MutableLiveData<Boolean>()
     fun signInWithEmailAndPassword() {
         shouldClearFocus.postValue(true)
+        hideKeyboard.postValue(true)
         if (!validateForm()) return
         isLoading.postValue(true)
 
         firebaseAuth.signInWithEmailAndPassword(email.value!!, password.value!!)
             .addOnCompleteListener { task ->
-                isLoading.postValue(false)
                 if (task.isSuccessful) {
-                    errorLiveData.postValue(ViewError(task.result.user?.uid))
+                    getUserFromFirestore(task.result.user?.uid)
                 } else {
-                    errorLiveData.postValue(ViewError(task.exception?.localizedMessage))
+                    isLoading.postValue(false)
+                    messageLiveData.postValue(Message(task.exception?.localizedMessage))
                 }
 
             }
+    }
+
+    private fun getUserFromFirestore(uid: String?) {
+        UsersDao.getUser(uid ?: "") { task ->
+            isLoading.postValue(false)
+            if (task.isSuccessful) {
+                val user = task.result.toObject(User::class.java)
+                SessionProvider.user = user
+                events.postValue(LoginViewEvents.NavigateToHome)
+            } else {
+                messageLiveData.postValue(Message(task.exception?.localizedMessage))
+            }
+        }
     }
 
     fun onEmailFocusChange(view: View, hasFocus: Boolean) {
@@ -81,8 +100,14 @@ class LoginViewModel : ViewModel() {
         } else {
             passwordError.postValue(null)
         }
-
-
         return valid
+    }
+
+    fun onRegisterClicked() {
+        events.postValue(LoginViewEvents.NavigateToRegister)
+    }
+
+    fun onOutsideClick() {
+        hideKeyboard.postValue(true)
     }
 }

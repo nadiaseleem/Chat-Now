@@ -9,7 +9,7 @@
 
         <variable
             name="vm"
-            type="com.example.chatapp.home.register.RegisterViewModel" />
+            type="com.example.chatapp.ui.authentication.register.RegisterViewModel" />
 
     </data>
 
@@ -22,6 +22,7 @@
             android:id="@+id/constraint"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:onClick="@{()-> vm.onOutsideClick()}"
             tools:background="@drawable/bg">
 
             <com.google.android.material.textfield.TextInputLayout
@@ -150,6 +151,7 @@
                 android:layout_marginTop="20dp"
                 android:layout_marginEnd="20dp"
                 android:background="@color/blue"
+                android:clickable="@{vm.isLoading?false:true}"
                 android:onClick="@{()->vm.createAccountWithEmailAndPassword()}"
                 android:paddingHorizontal="32dp"
                 android:paddingVertical="16dp"
@@ -199,6 +201,7 @@
                 android:textAlignment="textStart"
                 android:textColor="@color/blue"
                 android:textStyle="bold"
+                android:onClick="@{()->vm.onLoginClicked()}"
                 app:layout_constraintTop_toBottomOf="@id/register_btn" />
 
             <androidx.constraintlayout.widget.Guideline

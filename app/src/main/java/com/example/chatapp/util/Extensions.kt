@@ -1,8 +1,6 @@
 package com.example.chatapp.util
 
-import android.app.Activity
 import android.content.Context
-import android.content.DialogInterface
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AlertDialog
@@ -16,34 +14,44 @@ fun View.hideKeyboard(activity: AppCompatActivity?) {
 }
 
 
-fun Fragment.showAlertDialog(
+fun Fragment.showMessage(
     message: String,
     posActionName: String? = null,
-    posAction: DialogInterface.OnClickListener? = null,
+    posAction: OnDialogActionClickListener? = null,
     negActionName: String? = null,
-    negAction: DialogInterface.OnClickListener? = null
+    negAction: OnDialogActionClickListener? = null,
+    isCancelable: Boolean = true
 ): AlertDialog {
 
     val alertDialogBuilder = AlertDialog.Builder(requireContext())
     alertDialogBuilder.setMessage(message)
-    alertDialogBuilder.setPositiveButton(posActionName, posAction)
-    alertDialogBuilder.setNegativeButton(negActionName, negAction)
+    if (posActionName != null)
+        alertDialogBuilder.setPositiveButton(posActionName) { dialogInterface, id ->
+            dialogInterface.dismiss()
+            posAction?.onDialogActionClick()
+        }
+    if (negActionName != null)
+        alertDialogBuilder.setNegativeButton(negActionName) { dialogInterface, id ->
+            dialogInterface.dismiss()
+            negAction?.onDialogActionClick()
+        }
+    alertDialogBuilder.setCancelable(isCancelable)
     return alertDialogBuilder.show()
 }
 
-fun Activity.showAlertDialog(
-    message: String,
-    posActionName: String? = null,
-    posAction: DialogInterface.OnClickListener? = null,
-    negActionName: String? = null,
-    negAction: DialogInterface.OnClickListener? = null
-): AlertDialog {
-
-    val alertDialogBuilder = AlertDialog.Builder(this)
-    alertDialogBuilder.setMessage(message)
-    alertDialogBuilder.setPositiveButton(posActionName, posAction)
-    alertDialogBuilder.setNegativeButton(negActionName, negAction)
-    return alertDialogBuilder.show()
-}
+//fun Activity.showAlertDialog(
+//    message: String,
+//    posActionName: String? = null,
+//    posAction: DialogInterface.OnClickListener? = null,
+//    negActionName: String? = null,
+//    negAction: DialogInterface.OnClickListener? = null
+//): AlertDialog {
+//
+//    val alertDialogBuilder = AlertDialog.Builder(this)
+//    alertDialogBuilder.setMessage(message)
+//    alertDialogBuilder.setPositiveButton(posActionName, posAction)
+//    alertDialogBuilder.setNegativeButton(negActionName, negAction)
+//    return alertDialogBuilder.show()
+//}
 
 

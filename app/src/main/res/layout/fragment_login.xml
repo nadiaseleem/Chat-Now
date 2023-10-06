@@ -9,8 +9,7 @@
 
         <variable
             name="vm"
-            type="com.example.chatapp.home.login.LoginViewModel" />
-
+            type="com.example.chatapp.ui.authentication.login.LoginViewModel" />
     </data>
 
     <ScrollView
@@ -22,7 +21,8 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/constraint"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:onClick="@{()->vm.onOutsideClick()}">
 
             <TextView
                 android:id="@+id/welcome_tv"
@@ -115,6 +115,7 @@
                 android:layout_marginTop="20dp"
                 android:layout_marginEnd="20dp"
                 android:background="@color/blue"
+                android:clickable="@{vm.isLoading?false:true}"
                 android:onClick="@{()->vm.signInWithEmailAndPassword()}"
                 android:paddingHorizontal="32dp"
                 android:paddingVertical="16dp"
@@ -164,6 +165,7 @@
                 android:textAlignment="textStart"
                 android:textColor="@color/blue"
                 android:textStyle="bold"
+                android:onClick="@{()->vm.onRegisterClicked()}"
                 app:layout_constraintTop_toBottomOf="@id/login_btn" />
 
             <androidx.constraintlayout.widget.Guideline
