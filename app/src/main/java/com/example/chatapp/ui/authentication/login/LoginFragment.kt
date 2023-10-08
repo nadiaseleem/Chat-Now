@@ -50,7 +50,7 @@ class LoginFragment : Fragment() {
         loginViewModel.messageLiveData.observe(viewLifecycleOwner) { message ->
             showMessage(
                 message = message.message ?: "something went wrong",
-                posActionName = "ok",
+                posActionName = message.posName,
                 posAction = message.posAction,
                 negActionName = message.negName,
                 negAction = message.negAction
@@ -79,9 +79,7 @@ class LoginFragment : Fragment() {
         requireActivity().finish()
     }
 
-    fun hideKeyboard() {
-        view?.hideKeyboard(activity as AppCompatActivity?)
-    }
+
 
     override fun onResume() {
         super.onResume()
@@ -112,5 +110,9 @@ class LoginFragment : Fragment() {
         }
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        binding.unbind()
+    }
 
 }

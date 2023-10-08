@@ -12,5 +12,16 @@
     <string name="create_account">Create Account</string>
     <string name="password_confirmation">Password Confirmation</string>
     <string name="username">Username</string>
+    <string name="create_new_room">Create New Room</string>
+    <string name="room_name">Room Title</string>
+    <string name="room_description">Room Description</string>
+    <string name="create">Create</string>
+    <string name="room_category">Room Category</string>
+
+    <string-array name="categories">
+        <item>Sports</item>
+        <item>Music</item>
+        <item>Movies</item>
+    </string-array>
 
 </resources>

@@ -14,8 +14,8 @@ import com.google.firebase.auth.FirebaseAuth
 
 class LoginViewModel : ViewModel() {
     private val firebaseAuth = FirebaseAuth.getInstance()
-    val email = MutableLiveData<String>()
-    val password = MutableLiveData<String>()
+    val email = MutableLiveData<String>("nadia@gmail.com")
+    val password = MutableLiveData<String>("Nadia@123")
 
     val emailError = MutableLiveData<String?>()
     val passwordError = MutableLiveData<String?>()
@@ -37,7 +37,12 @@ class LoginViewModel : ViewModel() {
                     getUserFromFirestore(task.result.user?.uid)
                 } else {
                     isLoading.postValue(false)
-                    messageLiveData.postValue(Message(task.exception?.localizedMessage))
+                    messageLiveData.postValue(
+                        Message(
+                            task.exception?.localizedMessage,
+                            posName = "ok"
+                        )
+                    )
                 }
 
             }
@@ -51,7 +56,7 @@ class LoginViewModel : ViewModel() {
                 SessionProvider.user = user
                 events.postValue(LoginViewEvents.NavigateToHome)
             } else {
-                messageLiveData.postValue(Message(task.exception?.localizedMessage))
+                messageLiveData.postValue(Message(task.exception?.localizedMessage, posName = "ok"))
             }
         }
     }

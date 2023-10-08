@@ -5,7 +5,6 @@ import android.view.View
 import android.widget.EditText
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.chatapp.SessionProvider
 import com.example.chatapp.common.SingleLiveEvent
 import com.example.chatapp.firestore.dao.UsersDao
 import com.example.chatapp.firestore.model.User
@@ -35,11 +34,9 @@ class RegisterViewModel : ViewModel() {
                 .postValue(false)
             if (task.isSuccessful) {
                 messageLiveData.postValue(
-                    Message(message = "User registered successfully", posName = "ok",
-                        posAction = {
-                            SessionProvider.user = user
-                            events.postValue(RegisterViewEvent.NavigateToHome)
-                        })
+                    Message(
+                        message = "User registered successfully", posName = "ok",
+                    )
                 )
             } else {
                 messageLiveData.postValue(
@@ -70,9 +67,11 @@ class RegisterViewModel : ViewModel() {
                         .postValue(false)
                     messageLiveData.postValue(
                         Message(
-                            task.exception?.localizedMessage
+                            task.exception?.localizedMessage,
+                            posName = "ok"
                         )
                     )
+
                 }
             }
 

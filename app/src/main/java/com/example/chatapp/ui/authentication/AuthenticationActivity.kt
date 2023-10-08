@@ -18,7 +18,13 @@ class AuthenticationActivity : AppCompatActivity() {
         supportFragmentManager.beginTransaction().replace(R.id.fragment_container, LoginFragment())
             .commit()
 
+        binding.lifecycleOwner = this
+
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        binding.unbind()
+    }
 
 }
