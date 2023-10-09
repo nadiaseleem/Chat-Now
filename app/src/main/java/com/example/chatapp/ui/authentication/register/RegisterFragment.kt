@@ -122,5 +122,8 @@ class RegisterFragment : Fragment() {
         }
     }
 
-
+    override fun onDestroy() {
+        super.onDestroy()
+        binding.unbind()
+    }
 }
